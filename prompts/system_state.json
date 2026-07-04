@@ -1,0 +1,11 @@
+{
+    "network_status": "restricted",
+    "traffic_filtering": "disabled",
+    "monitoring": "enabled",
+    "alert_status": "generated",
+    "device_status": "isolated",
+    "credential_status": "valid",
+    "identity_status": "unverified",
+    "malware_status": "scanning",
+    "threat_status": "contained"
+}

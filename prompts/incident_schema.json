@@ -1,0 +1,12 @@
+{
+    "attack": "string",
+    "attack_behavior" : "string",
+    "possible_impact": "string",
+    "response": "string",
+    "outcome": "string",
+    "metadata": {
+        "severity": "string",
+        "verification": "string",
+        "timestamp": "YYYY-MM-DD"
+    }
+}

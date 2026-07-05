@@ -10,59 +10,101 @@ from detect.anomalyscore import detect_anomaly
 
 def detection_node(state):
     result = predict_attack(state["traffic"])
-    state["attack"] = result["attack"]
-    state["confidence"] = result["confidence"]
-    return state
+    return {
+        "attack": result["attack"],
+        "confidence": result["confidence"]
+    }
 
 def zero_day_node(state):
     result = detect_anomaly(state["traffic"])
-    state["anomaly_score"] = result["anomaly_score"]
-    return state
+    return {
+        "anomaly_score": result["anomaly_score"]
+    }
 
 def investigation_node(state):
-    if state["confidence"] > 0.85:
-        state["threat_type"] = "Known Attack"
-    elif state["anomaly_score"] > 0.5:
-        state["attack"] = "Unknown"
-        state["confidence"] = 0
-        state["threat_type"] = "Potential Zero-Day Threat"
+    attack = state.get("attack")
+    confidence = state.get("confidence", 0)
+    anomaly_score = state.get("anomaly_score", 0)
+    
+    if confidence > 0.85:
+        threat_type = "Known Attack"
+    elif anomaly_score > 0.5:
+        attack = "Unknown"
+        confidence = 0
+        threat_type = "Potential Zero-Day Threat"
     else:
-        state["threat_type"] = "Suspicious Activity"
+        threat_type = "Suspicious Activity"
 
-    report = investigate(attack=state["attack"], confidence=state["confidence"], anomaly_score=state["anomaly_score"] , threat_type = state["threat_type"])
-    state["investigation"] = report
-    return state
+    report = investigate(attack=attack, confidence=confidence, anomaly_score=anomaly_score, threat_type=threat_type)
+    if report is None:
+        return {"status": "Agent Failure"}
+        
+    return {
+        "attack": attack,
+        "confidence": confidence,
+        "threat_type": threat_type,
+        "investigation": report
+    }
 
 def memory_node(state):
+    investigation = state.get("investigation")
+    if investigation is None:
+        return {}
+
     memory_query = {
         "attack": state["attack"],
         "analysis":
-            f"{state['investigation']['attack_behavior']} "
-            f"{state['investigation']['possible_impact']}"
+            f"{investigation.get('attack_behavior', '')} "
+            f"{investigation.get('possible_impact', '')}"
     }
-    state["memory"] = retrieve_similar_incidents(memory_query)
-    return state
+    return {
+        "memory": retrieve_similar_incidents(memory_query)
+    }
 
 def planning_node(state):
-    combined_result = state["investigation"].copy()
+    investigation = state.get("investigation")
+    if investigation is None:
+        return {}
+
+    combined_result = investigation.copy()
     combined_result["attack"] = state["attack"]
     combined_result["confidence"] = state["confidence"]
-    combined_result["similar_incident"] = state["memory"]
+    combined_result["similar_incident"] = state.get("memory")
+    
     plan = generate_plan(combined_result)
-    state["plan"] = plan
-    return state
+    if plan is None:
+        return {"status": "Agent Failure"}
+        
+    return {
+        "plan": plan
+    }
 
 def response_node(state):
-    alert = create_security_alert(state["attack"] , state["investigation"], state["plan"])
-    execute_plan(state["plan"])
-    state["response"] = {"alert": alert,}
-    return state
+    plan = state.get("plan")
+    investigation = state.get("investigation")
+    if plan is None or investigation is None:
+        return {}
+
+    alert = create_security_alert(state["attack"], investigation, plan)
+    execute_plan(plan)
+    return {
+        "response": {"alert": alert}
+    }
 
 def verification_node(state):
-    expected_changes = get_expected_plan(state["plan"])
+    plan = state.get("plan")
+    if plan is None:
+        return {"retry_count": 1}
+
+    expected_changes = get_expected_plan(plan)
     execution_success = verify_execution(expected_changes)
-    state["verification"] = execution_success["verification"]
-    state["status"] = execution_success["outcome"]
-    store_verified_incident(state["attack"] , state["investigation"] , state["plan"] , execution_success)
     
-    return state
+    store_verified_incident(state["attack"], state["investigation"], plan, execution_success)
+    
+    retry_increment = 0 if execution_success["outcome"] == "Threat Mitigated" else 1
+
+    return {
+        "verification": execution_success["verification"],
+        "status": execution_success["outcome"],
+        "retry_count": retry_increment
+    }

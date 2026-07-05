@@ -9,7 +9,7 @@ collection = client.get_or_create_collection(name="incidents")
 def retrieve_similar_incidents(memory_query):
     query_text = f"""Attack: {memory_query['attack']} Analysis: {memory_query['analysis']} """
     results = collection.query(query_texts=[query_text] , n_results=1)
-    if not results["documents"][0]:
+    if not results["documents"][0] or not results["documents"][0]:
         return None
     distance = results["distances"][0][0]
     if distance > 0.8 :

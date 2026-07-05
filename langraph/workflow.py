@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, END
+from .state import AgentState
 from .node import (
     detection_node,
     zero_day_node,
@@ -20,9 +21,11 @@ def risk_router(state):
 def verification_router(state):
     if state["status"] == "Threat Mitigated":
         return "end"
+    if state.get("retry_count", 0) >= 3:
+        return "end"
     return "investigation"
 
-graph = StateGraph(dict)
+graph = StateGraph(AgentState)
 graph.add_node("detection", detection_node)
 graph.add_node("zero_day", zero_day_node)
 graph.add_node("investigation", investigation_node)

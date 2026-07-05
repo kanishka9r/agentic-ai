@@ -1,11 +1,12 @@
 __pycache__/
 *.pyc
 *.pyo
-data
+data/
 .env
-memory_db
+memory_db/
 models
 ppt+notes
 research paper
 prompts/alerts.json
 prompts/system_state.json
+main.py

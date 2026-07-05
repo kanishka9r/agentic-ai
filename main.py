@@ -8,11 +8,7 @@ from respons.alert import create_security_alert
 from respons.response import execute_plan
 from respons.response import get_expected_plan
 from respons.action import reset_system_state
-from verify.verification import capture_before_state
-from verify.verification import verify_response
-from verify.verification import capture_after_state
 from verify.verification import verify_execution
-
 
 X = pd.read_csv("data/processed/X_val.csv")
 y = pd.read_csv("data/processed/y_val.csv")
@@ -40,7 +36,6 @@ investigation_report = investigate(sample)
 if investigation_report is None:
     print("Pipeline stopped because Investigation Agent failed.")
     exit()
-before_state = capture_before_state(investigation_report)
 
 memory_query = {
         "attack": investigation_report["attack"],
@@ -57,13 +52,13 @@ if plan is None:
     exit()
 
 expected_changes = get_expected_plan(plan)
+
 execute_plan(plan)
 
 alert = create_security_alert(investigation_report,plan)
 
-after_state = capture_after_state(updated_sample)
 execution_success = verify_execution(expected_changes)
-verification_result = verify_response(before_state,after_state , execution_success)
+
 
 with open("prompts/system_state.json", "r") as f:
     current_state = json.load(f)
@@ -81,7 +76,7 @@ print("\n=== Alert ===")
 print(alert)
 
 print("\n=== Verification Result ===")
-print(verification_result)
+print(execution_success)
 
 print("\n=== Current System State ===")
 print(json.dumps(current_state, indent=4))

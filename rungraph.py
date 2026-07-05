@@ -4,7 +4,7 @@ import pandas as pd
 
 X = pd.read_csv("data/processed/X_val.csv")
 
-sample = X.iloc[[454]]
+sample = X.iloc[[635]]
 
 state = create_state()
 state["traffic"] = sample

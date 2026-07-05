@@ -7,3 +7,5 @@ memory_db
 models
 ppt+notes
 research paper
+prompts/alerts.json
+prompts/system_state.json

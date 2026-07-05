@@ -10,7 +10,10 @@ from .node import (
 )
 
 def risk_router(state):
-    if state["anomaly_score"] < 0.5:
+    if (
+        state["attack"] == "Benign"
+        and state["anomaly_score"] < 0.2
+    ):
         return "end"
     return "investigation"
 

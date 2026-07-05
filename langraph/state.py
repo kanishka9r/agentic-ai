@@ -3,11 +3,12 @@ def create_state():
         "traffic": None,
         "attack": None,
         "confidence": None,
-        "status": None,
         "anomaly_score": None,
+        "threat_type" : None,
         "investigation": None,
         "memory": None,
         "plan": None,
         "response": None,
-        "verification": None
+        "verification": None,
+        "status" :None
     }

@@ -9,22 +9,7 @@ import time
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-def investigate(sample):
-    detection_result = predict_attack(sample)
-    attack = detection_result["attack"]
-    confidence = detection_result["confidence"]
-    zero_day_result = detect_anomaly(sample)
-    anomaly_score = zero_day_result["anomaly_score"]
-
-    if confidence > 0.75:
-        threat_type = "Known Attack"
-    elif anomaly_score > 0.85:
-        attack = "Unknown"
-        confidence = 0
-        threat_type = "Potential Zero-Day Threat"
-    else:
-        threat_type = "Suspicious Activity"
-     
+def investigate(attack , confidence , anomaly_score , threat_type):
     if attack == "Benign":
         severity = "Low" 
     elif anomaly_score > 0.9:
@@ -72,9 +57,6 @@ def investigate(sample):
         return None
     
     return {
-    "attack": attack,
-    "confidence": confidence,
-    "anomaly_score": anomaly_score,
     "severity": severity,     
     "threat_type": threat_type,
     "threat_explanation":

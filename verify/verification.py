@@ -11,7 +11,7 @@ def verify_execution(expected_changes):
                 "outcome": "Response Execution Failed"
             }
 
-    # erify the effect.
+    # verify the effect.
     threat_status = system_state.get("threat_status")
 
     if threat_status == "contained":

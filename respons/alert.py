@@ -1,10 +1,10 @@
 import json
 from datetime import datetime
 
-def create_security_alert(investigation_report, plan):
+def create_security_alert(attack , investigation_report, plan):
     alert = {
         "timestamp": datetime.now().isoformat(),
-        "attack": investigation_report["attack"],
+        "attack": attack,
         "severity": investigation_report["severity"],
         "status": "Response Executed",
         "actions_taken": [

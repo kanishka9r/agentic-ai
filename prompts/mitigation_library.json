@@ -8,63 +8,54 @@
   "BruteForce": [
     "Block Source IP",
     "Enable Rate Limiting",
-    "Reset Compromised Credentials",
-    "Generate Alert"
+    "Reset Compromised Credentials"
   ],
 
   "DDoS": [
     "Block Malicious Traffic",
     "Enable DDoS Protection",
-    "Apply Traffic Filtering",
-    "Generate Alert"
+    "Apply Traffic Filtering"
   ],
 
   "DoS": [
     "Block Source IP",
     "Apply Rate Limiting",
-    "Restrict Excessive Connections",
-    "Generate Alert"
+    "Restrict Excessive Connections"
   ],
 
   "Malware": [
     "Isolate Device",
     "Terminate Malicious Process",
-    "Perform Malware Scan",
-    "Generate Alert"
+    "Perform Malware Scan"
   ],
 
   "Mirai": [
     "Isolate Device",
     "Block Outbound Traffic",
-    "Monitor Device",
-    "Generate Alert"
+    "Monitor Device"
   ],
 
   "Recon": [
     "Block Suspicious Scanner",
     "Restrict Network Access",
-    "Increase Monitoring",
-    "Generate Alert"
+    "Increase Monitoring"
   ],
 
   "Spoofing": [
     "Block Suspicious Traffic",
     "Verify Device Identity",
-    "Enable Packet Validation",
-    "Generate Alert"
+    "Enable Packet Validation"
   ],
 
   "WebAttack": [
     "Block Malicious Requests",
     "Enable Web Application Firewall",
-    "Monitor Web Traffic",
-    "Generate Alert"
+    "Monitor Web Traffic"
   ],
 
   "Unknown Threat": [
     "Isolate Device",
     "Increase Monitoring",
-    "Generate Alert",
     "Escalate Investigation"
   ]
 }

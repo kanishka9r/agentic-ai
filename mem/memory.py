@@ -16,9 +16,10 @@ def retrieve_similar_incidents(memory_query):
         return None
     return results["documents"][0][0]
 
-def store_verified_incident(investigation_report,plan,verification_result):
+def store_verified_incident(attack , investigation_report,plan,verification_result):
     document = f"""
-    Attack: {investigation_report['attack']}
+    Attack:
+    {attack}
     Attack Behavior:
     {investigation_report['attack_behavior']}
     Possible Impact:

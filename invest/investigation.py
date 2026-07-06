@@ -60,11 +60,11 @@ def investigate(attack , confidence , anomaly_score , threat_type):
     "severity": severity,     
     "threat_type": threat_type,
     "threat_explanation":
-        result["threat_explanation"],
+        result.get("threat_explanation", ""),
     "possible_impact":
-        result["possible_impact"],
+        result.get("possible_impact", ""),
     "attack_behavior":
-        result["attack_behavior"],
+        result.get("attack_behavior", ""),
     "llm_severity":
-        result["severity"]
+        result.get("severity", "")
 }

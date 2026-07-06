@@ -1,15 +1,14 @@
 import json
 from datetime import datetime
-
 def create_security_alert(attack , investigation_report, plan):
     alert = {
         "timestamp": datetime.now().isoformat(),
         "attack": attack,
-        "severity": investigation_report["severity"],
+        "severity": investigation_report.get("severity", "Unknown"),
         "status": "Response Executed",
         "actions_taken": [
-            step["action"]
-            for step in plan["recommended_actions"]
+            step.get("action", "")
+            for step in plan.get("recommended_actions", [])
         ]
     }
 

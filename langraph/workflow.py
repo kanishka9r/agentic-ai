@@ -12,14 +12,14 @@ from .node import (
 
 def risk_router(state):
     if (
-        state["attack"] == "Benign"
-        and state["anomaly_score"] < 0.2
+        state.get("attack") == "Benign"
+        and state.get("anomaly_score", 1.0) < 0.2
     ):
         return "end"
     return "investigation"
 
 def verification_router(state):
-    if state["status"] == "Threat Mitigated":
+    if state.get("status") == "Threat Mitigated":
         return "end"
     if state.get("retry_count", 0) >= 3:
         return "end"

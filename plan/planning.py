@@ -14,15 +14,15 @@ def generate_plan(combined_result):
     with open("prompts/mitigation_library.json","r") as f:
         mitigation_library = json.load(f)    
 
-    attack = combined_result["attack"]
-    mitigation_actions = mitigation_library.get(attack, mitigation_library["Unknown Threat"])    
+    attack = combined_result.get("attack", "Unknown")
+    mitigation_actions = mitigation_library.get(attack, mitigation_library.get("Unknown Threat", []))    
 
     prompt = prompt_template.format(
-        attack=combined_result["attack"],
-        threat_explanation=combined_result["threat_explanation"],
-        possible_impact=combined_result["possible_impact"],
-        severity=combined_result["severity"],
-        similar_incident=combined_result["similar_incident"],
+        attack=combined_result.get("attack", "Unknown"),
+        threat_explanation=combined_result.get("threat_explanation", ""),
+        possible_impact=combined_result.get("possible_impact", ""),
+        severity=combined_result.get("severity", ""),
+        similar_incident=combined_result.get("similar_incident", ""),
         mitigation_actions="\n".join(mitigation_actions)
     )
 
@@ -57,7 +57,7 @@ def generate_plan(combined_result):
     approved_actions = set(mitigation_actions)
     validated_actions = []
     for step in plan.get("recommended_actions", []):
-        if step["action"] in approved_actions:
+        if step.get("action") in approved_actions:
             validated_actions.append(step)
     plan["recommended_actions"] = validated_actions
     return plan

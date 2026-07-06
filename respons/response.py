@@ -51,12 +51,13 @@ action_map = {
 }   
 
 def execute_plan(plan):
-    for step in plan["recommended_actions"]:
-        action = step["action"]
-        action_map[action]()
+    for step in plan.get("recommended_actions", []):
+        action = step.get("action", "")
+        action_map.get(action, log_activity)()
         
 def get_expected_plan(plan):
     expected_changes = {}
-    for step in plan["recommended_actions"]:
-        expected_changes.update(expected_change_map[step["action"]])
+    for step in plan.get("recommended_actions", []):
+        action = step.get("action", "")
+        expected_changes.update(expected_change_map.get(action, {}))
     return expected_changes

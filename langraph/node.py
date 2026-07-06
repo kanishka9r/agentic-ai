@@ -9,16 +9,17 @@ from detect.xgboostpred import predict_attack
 from detect.anomalyscore import detect_anomaly
 
 def detection_node(state):
-    result = predict_attack(state["traffic"])
+    result = predict_attack(state.get("traffic"))
+    
     return {
-        "attack": result["attack"],
-        "confidence": result["confidence"]
+        "attack": result.get("attack", "Unknown"),
+        "confidence": result.get("confidence", 0.0)
     }
 
 def zero_day_node(state):
-    result = detect_anomaly(state["traffic"])
+    result = detect_anomaly(state.get("traffic"))
     return {
-        "anomaly_score": result["anomaly_score"]
+        "anomaly_score": result.get("anomaly_score", 0.0)
     }
 
 def investigation_node(state):
@@ -51,14 +52,14 @@ def memory_node(state):
     if investigation is None:
         return {}
 
-    memory_query = {
-        "attack": state["attack"],
+    combined_result = {
+        "attack": state.get("attack", "Unknown"),
         "analysis":
             f"{investigation.get('attack_behavior', '')} "
             f"{investigation.get('possible_impact', '')}"
     }
     return {
-        "memory": retrieve_similar_incidents(memory_query)
+        "memory": retrieve_similar_incidents(combined_result)
     }
 
 def planning_node(state):
@@ -67,8 +68,8 @@ def planning_node(state):
         return {}
 
     combined_result = investigation.copy()
-    combined_result["attack"] = state["attack"]
-    combined_result["confidence"] = state["confidence"]
+    combined_result["attack"] = state.get("attack", "Unknown")
+    combined_result["confidence"] = state.get("confidence", 0.0)
     combined_result["similar_incident"] = state.get("memory")
     
     plan = generate_plan(combined_result)
@@ -85,7 +86,7 @@ def response_node(state):
     if plan is None or investigation is None:
         return {}
 
-    alert = create_security_alert(state["attack"], investigation, plan)
+    alert = create_security_alert(state.get("attack", "Unknown"), investigation, plan)
     execute_plan(plan)
     return {
         "response": {"alert": alert}
@@ -99,12 +100,12 @@ def verification_node(state):
     expected_changes = get_expected_plan(plan)
     execution_success = verify_execution(expected_changes)
     
-    store_verified_incident(state["attack"], state["investigation"], plan, execution_success)
-    
-    retry_increment = 0 if execution_success["outcome"] == "Threat Mitigated" else 1
+    store_verified_incident(state.get("attack", "Unknown"), state.get("investigation", {}), plan, execution_success)
+
+    retry_increment = 0 if execution_success.get("outcome") == "Threat Mitigated" else 1
 
     return {
-        "verification": execution_success["verification"],
-        "status": execution_success["outcome"],
+        "verification": execution_success.get("verification", "Unknown"),
+        "status": execution_success.get("outcome", "Unknown"),
         "retry_count": retry_increment
     }
